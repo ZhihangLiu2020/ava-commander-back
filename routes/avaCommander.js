@@ -45,6 +45,12 @@ router.post('/updateUsers', async (ctx, next) => {
     let data = await db.query(sql);
     ctx.body = data;
 })
+//获取导航栏
+router.get('/getNavList', async (ctx, next) =>{
+    let sql = 'select * from nav';
+    let data = await db.query(sql);
+    ctx.body = data;
+})
  
  
 module.exports = router
