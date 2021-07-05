@@ -1,12 +1,39 @@
 const router = require('koa-router')()
 const db = require('../db.js')
- 
+
+//引用multer实现文件上传与下载
+const multer=require('koa-multer');
+//配置单文件上传的路径
+var storage = multer.diskStorage({
+    //定义文件保存路径
+    destination:function(req,file,cb){
+        cb(null,'./public/upload/');//路径根据具体而定。如果不存在的话会自动创建一个路径
+    },                       //注意这里有个，
+    //修改文件名
+    filename:function(req,file,cb){
+        var fileFormat = (file.originalname).split(".");
+            cb(null,Date.now() + "." + fileFormat[fileFormat.length - 1]);
+    }
+})
+var upload = multer({ storage: storage });
+
+
+
 router.prefix('/avaCommander')
  
 router.get('/', (ctx, next) => {
     ctx.body = 'this is a users response!'
 })
  
+// 上传文件接口
+router.post('/upload',upload.single('file'), async (ctx,next) => {
+    console.log('new data',ctx.req.file.filename)
+    ctx.body = {
+        code: 200,
+        filename: ctx.req.file.filename
+    }
+});
+
 //查询所有用户
 router.get('/selectAllUsers', async (ctx, next) => {
     let sql = 'select * from users'
@@ -47,7 +74,31 @@ router.post('/updateUsers', async (ctx, next) => {
 })
 //获取导航栏
 router.get('/getNavList', async (ctx, next) =>{
-    let sql = 'select * from nav';
+    let sql = 'select * from nav order by id';
+    let data = await db.query(sql);
+    ctx.body = data;
+})
+// 获取场景列表
+router.get('/getScenceList', async (ctx, next) => {
+    let sql = 'select * from scence';
+    let data = await db.query(sql);
+    ctx.body = data;
+})
+// 获取结果列表
+router.get('/getResultList', async (ctx, next) => {
+    let sql = 'select * from result';
+    let data = await db.query(sql);
+    ctx.body = data;
+})
+// 获取支持协议列表
+router.get('/getProtocolList', async (ctx, next) => {
+    let sql = 'select * from protocols';
+    let data = await db.query(sql);
+    ctx.body = data;
+})
+// 获取流量样本列表
+router.get('/getTrafficList', async (ctx, next) => {
+    let sql = 'select * from sampletraffic';
     let data = await db.query(sql);
     ctx.body = data;
 })

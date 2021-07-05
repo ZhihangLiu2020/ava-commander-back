@@ -10,6 +10,23 @@ const index = require('./routes/index')
 const users = require('./routes/users')
 const avaCommanders = require('./routes/avaCommander')
 
+
+//上传文件
+const fs=require('fs');
+const path = require('path')
+const static = require('koa-static')
+const staticPath = './public/upload'
+app.use(static(
+  path.join( __dirname,  staticPath)
+))
+//解决跨域
+//const cors=require('koa2-cors');
+//app.use(cors());
+
+
+
+
+
 // error handler
 onerror(app)
 
