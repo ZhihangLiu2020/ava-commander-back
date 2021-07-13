@@ -1,5 +1,8 @@
+// 数据和文件接口
+
 const router = require('koa-router')()
 const db = require('../db.js')
+router.prefix('/avaCommander')
 
 //引用multer实现文件上传与下载
 const multer=require('koa-multer');
@@ -17,14 +20,9 @@ var storage = multer.diskStorage({
 })
 var upload = multer({ storage: storage });
 
+//下载文件
+const send = require('koa-send')
 
-
-router.prefix('/avaCommander')
- 
-router.get('/', (ctx, next) => {
-    ctx.body = 'this is a users response!'
-})
- 
 // 上传文件接口
 router.post('/upload',upload.single('file'), async (ctx,next) => {
     console.log('new data',ctx.req.file.filename)
@@ -33,6 +31,14 @@ router.post('/upload',upload.single('file'), async (ctx,next) => {
         filename: ctx.req.file.filename
     }
 });
+
+// 下载文件
+router.post('/download', async (ctx, next)=>{
+	let { name }  = ctx.request.body;
+	let path = `./public/upload/${name}`;
+	ctx.attachment(path);
+    await send(ctx, path);
+})
 
 //查询所有用户
 router.get('/selectAllUsers', async (ctx, next) => {
@@ -44,7 +50,7 @@ router.get('/selectAllUsers', async (ctx, next) => {
 //用户登陆
 router.post('/selectUserByUsername', async (ctx, next) => {
     let { username } = ctx.request.body;
-    let sql = `select * from users where username='${username}'`
+    let sql = `select password from users where username='${username}'`
     let data = await db.query(sql);
     ctx.body = data
 })

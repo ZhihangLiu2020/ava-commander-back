@@ -25,8 +25,6 @@ app.use(static(
 
 
 
-
-
 // error handler
 onerror(app)
 
